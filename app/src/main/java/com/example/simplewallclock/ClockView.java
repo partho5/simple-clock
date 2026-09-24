@@ -15,19 +15,18 @@ import androidx.annotation.Nullable;
 import java.util.Calendar;
 
 /**
- * Custom View rendering an analog wall clock matching vintage wall clock aesthetics:
- * - Solid black outer background
- * - Bright gray round clock dial
- * - Thick black outer bezel rim
- * - 60 radial tick marks with refined stroke widths
- * - Prominent hour numbers (1-12)
- * - Tapered spade hands in rich vintage brass / golden color
- * - Matching vintage brass second hand and central pivot
+ * Custom View rendering an analog wall clock with:
+ * - Solid black screen background
+ * - Distinct, true medium-gray round clock dial (#A6A6A6)
+ * - Dark charcoal/black outer bezel rim with sharp outline edge
+ * - High-contrast black numbers and radial tick marks
+ * - Vintage brass golden hands and pivot
  */
 public class ClockView extends View {
 
     private Paint backgroundPaint;
     private Paint bezelPaint;
+    private Paint bezelOutlinePaint;
     private Paint facePaint;
     private Paint minuteTickPaint;
     private Paint hourTickPaint;
@@ -46,8 +45,10 @@ public class ClockView extends View {
 
     // Color palette
     private static final int BACKGROUND_COLOR = Color.BLACK;
-    private static final int SILVER_DIAL_COLOR = Color.parseColor("#DCDCDC"); // Silver metallic gray
-    private static final int BRASS_GOLD_COLOR = Color.parseColor("#C5A059");
+    private static final int MEDIUM_GRAY_DIAL = Color.parseColor("#A6A6A6"); // True, distinct gray (not white)
+    private static final int BEZEL_COLOR = Color.parseColor("#1C1C1C");
+    private static final int BEZEL_OUTLINE = Color.parseColor("#444444");
+    private static final int BRASS_GOLD_COLOR = Color.parseColor("#D4AF37");
     private static final int BRASS_PIVOT_COLOR = Color.parseColor("#B8860B");
 
     public ClockView(Context context) {
@@ -71,11 +72,15 @@ public class ClockView extends View {
         backgroundPaint.setStyle(Paint.Style.FILL);
 
         bezelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        bezelPaint.setColor(Color.BLACK);
+        bezelPaint.setColor(BEZEL_COLOR);
         bezelPaint.setStyle(Paint.Style.STROKE);
 
+        bezelOutlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bezelOutlinePaint.setColor(BEZEL_OUTLINE);
+        bezelOutlinePaint.setStyle(Paint.Style.STROKE);
+
         facePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        facePaint.setColor(SILVER_DIAL_COLOR);
+        facePaint.setColor(MEDIUM_GRAY_DIAL);
         facePaint.setStyle(Paint.Style.FILL);
 
         minuteTickPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -119,19 +124,20 @@ public class ClockView extends View {
 
         if (clockRadius <= 0) return;
 
-        // 1. Thick black outer bezel border (~8% of clock radius)
+        // 1. Outer bezel rim stroke width (~8% of clock radius)
         float bezelWidth = clockRadius * 0.08f;
         bezelPaint.setStrokeWidth(bezelWidth);
+        bezelOutlinePaint.setStrokeWidth(clockRadius * 0.008f);
 
         // 2. Refined tick mark stroke widths
-        minuteTickPaint.setStrokeWidth(clockRadius * 0.006f);
-        hourTickPaint.setStrokeWidth(clockRadius * 0.015f);
+        minuteTickPaint.setStrokeWidth(clockRadius * 0.007f);
+        hourTickPaint.setStrokeWidth(clockRadius * 0.016f);
 
         // 3. Bigger numbers font size (~18% of clock radius)
         numberPaint.setTextSize(clockRadius * 0.18f);
 
         // 4. Second hand stroke width
-        secondHandPaint.setStrokeWidth(clockRadius * 0.013f);
+        secondHandPaint.setStrokeWidth(clockRadius * 0.014f);
 
         // Build Hour Hand Path (tapered spade shape)
         float hLength = clockRadius * 0.48f;
@@ -168,18 +174,19 @@ public class ClockView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // 1. Draw black background outside clock
+        // 1. Draw solid black screen background
         canvas.drawColor(BACKGROUND_COLOR);
 
         if (clockRadius <= 0) return;
 
-        // 2. Draw bright gray round clock dial background
+        // 2. Draw true medium-gray round clock dial face
         float bezelWidth = bezelPaint.getStrokeWidth();
         float innerRadius = clockRadius - (bezelWidth / 2f);
         canvas.drawCircle(centerX, centerY, innerRadius, facePaint);
 
-        // 3. Draw thick black outer border bezel
+        // 3. Draw outer dark bezel rim & subtle edge outline so clock stands out on black background
         canvas.drawCircle(centerX, centerY, innerRadius, bezelPaint);
+        canvas.drawCircle(centerX, centerY, clockRadius, bezelOutlinePaint);
 
         // 4. Draw 60 minute tick positions (radial line sticks)
         float tickOuterY = centerY - innerRadius + (bezelWidth / 2f);
