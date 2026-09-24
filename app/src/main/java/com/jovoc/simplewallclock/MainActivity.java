@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
+import android.telephony.ServiceState;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
@@ -168,18 +170,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isSimCardOn() {
-        // 1. Check TelephonyManager SIM State
+        // 1. Check if Airplane Mode is ON (cellular radio disabled)
         try {
-            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-            if (tm != null) {
-                int simState = tm.getSimState();
-                if (simState == TelephonyManager.SIM_STATE_READY) {
-                    return true;
-                }
+            boolean isAirplaneModeOn = Settings.Global.getInt(
+                    getContentResolver(),
+                    Settings.Global.AIRPLANE_MODE_ON, 0
+            ) != 0;
+            if (isAirplaneModeOn) {
+                return false;
             }
         } catch (Exception ignored) {}
 
-        // 2. Check SubscriptionManager active SIM list
+        // 2. Check TelephonyManager SIM State & Cellular Service State
+        try {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (tm != null && tm.getSimState() == TelephonyManager.SIM_STATE_READY) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    ServiceState serviceState = tm.getServiceState();
+                    if (serviceState != null) {
+                        return serviceState.getState() == ServiceState.STATE_IN_SERVICE;
+                    }
+                }
+                return true;
+            }
+        } catch (SecurityException ignored) {
+            try {
+                TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                if (tm != null && tm.getSimState() == TelephonyManager.SIM_STATE_READY) {
+                    return true;
+                }
+            } catch (Exception ignored2) {}
+        } catch (Exception ignored) {}
+
+        // 3. Fallback: Check SubscriptionManager active SIM list
         try {
             SubscriptionManager sm = (SubscriptionManager) getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
             if (sm != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
