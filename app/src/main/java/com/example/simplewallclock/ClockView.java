@@ -3,9 +3,12 @@ package com.example.simplewallclock;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RadialGradient;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,6 +21,7 @@ import java.util.Calendar;
  * Custom View rendering an analog wall clock:
  * - Solid black outer background
  * - Pure white circular clock dial (#FFFFFF)
+ * - Glossy 3D glass sheen and inner rim vignette shadow overlay on dial
  * - Dark charcoal/black outer bezel rim with outline
  * - High-contrast black numbers and radial tick marks
  * - Luxurious warm copper / rose-gold metallic hands & pivot
@@ -34,6 +38,11 @@ public class ClockView extends View {
     private Paint handPaint;
     private Paint secondHandPaint;
     private Paint pivotPaint;
+
+    // Glass sheen & vignette paints
+    private Paint glassSheenPaint;
+    private Paint glassVignettePaint;
+    private final Path glassSheenPath = new Path();
 
     private float centerX;
     private float centerY;
@@ -113,6 +122,13 @@ public class ClockView extends View {
         pivotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         pivotPaint.setColor(LUXURY_PIVOT_COLOR);
         pivotPaint.setStyle(Paint.Style.FILL);
+
+        // Glass Sheen & Vignette
+        glassSheenPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        glassSheenPaint.setStyle(Paint.Style.FILL);
+
+        glassVignettePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        glassVignettePaint.setStyle(Paint.Style.FILL);
     }
 
     @Override
@@ -170,6 +186,34 @@ public class ClockView extends View {
         minuteHandPath.lineTo(0, -mLength);
         minuteHandPath.lineTo(-mShoulderW / 2f, mShoulderY);
         minuteHandPath.close();
+
+        // Configure Glass Sheen Linear Gradient (top-left specular glare across dial)
+        float innerRadius = clockRadius - (bezelWidth / 2f);
+        LinearGradient sheenGradient = new LinearGradient(
+                centerX - innerRadius, centerY - innerRadius,
+                centerX + innerRadius * 0.5f, centerY + innerRadius * 0.5f,
+                new int[]{
+                        Color.parseColor("#70FFFFFF"), // Bright specular sheen at top-left
+                        Color.parseColor("#25FFFFFF"), // Soft mid glare
+                        Color.parseColor("#00FFFFFF")  // Transparent
+                },
+                new float[]{0.0f, 0.45f, 1.0f},
+                Shader.TileMode.CLAMP
+        );
+        glassSheenPaint.setShader(sheenGradient);
+
+        // Configure Glass Vignette Inner Shadow Radial Gradient
+        RadialGradient vignetteGradient = new RadialGradient(
+                centerX, centerY, innerRadius,
+                new int[]{
+                        Color.parseColor("#00000000"), // Clear center
+                        Color.parseColor("#05000000"), // Very soft inner gradient
+                        Color.parseColor("#22000000")  // Soft edge depth shadow near bezel
+                },
+                new float[]{0.0f, 0.85f, 1.0f},
+                Shader.TileMode.CLAMP
+        );
+        glassVignettePaint.setShader(vignetteGradient);
     }
 
     @Override
@@ -186,11 +230,7 @@ public class ClockView extends View {
         float innerRadius = clockRadius - (bezelWidth / 2f);
         canvas.drawCircle(centerX, centerY, innerRadius, facePaint);
 
-        // 3. Draw outer dark bezel rim & edge outline
-        canvas.drawCircle(centerX, centerY, innerRadius, bezelPaint);
-        canvas.drawCircle(centerX, centerY, clockRadius, bezelOutlinePaint);
-
-        // 4. Draw 60 minute tick positions (radial line sticks)
+        // 3. Draw 60 minute tick positions (radial line sticks)
         float tickOuterY = centerY - innerRadius + (bezelWidth / 2f);
         for (int i = 0; i < 60; i++) {
             boolean isHourTick = (i % 5 == 0);
@@ -203,7 +243,7 @@ public class ClockView extends View {
             canvas.restore();
         }
 
-        // 5. Draw numbers 1 to 12
+        // 4. Draw numbers 1 to 12
         float numberRadius = clockRadius * 0.75f;
         for (int number = 1; number <= 12; number++) {
             double angleRad = Math.PI / 6 * (number - 3);
@@ -217,7 +257,7 @@ public class ClockView extends View {
             canvas.drawText(text, x, correctedY, numberPaint);
         }
 
-        // 6. Get local time
+        // 5. Get local time
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) % 12;
         int minute = calendar.get(Calendar.MINUTE);
@@ -228,21 +268,21 @@ public class ClockView extends View {
         float minuteAngle = (minute + second / 60f + millis / 60000f) * 6f;
         float hourAngle = (hour + minute / 60f + second / 3600f) * 30f;
 
-        // 7. Draw Hour Hand (luxurious warm copper/gold)
+        // 6. Draw Hour Hand (luxurious warm copper/gold)
         canvas.save();
         canvas.translate(centerX, centerY);
         canvas.rotate(hourAngle);
         canvas.drawPath(hourHandPath, handPaint);
         canvas.restore();
 
-        // 8. Draw Minute Hand (luxurious warm copper/gold)
+        // 7. Draw Minute Hand (luxurious warm copper/gold)
         canvas.save();
         canvas.translate(centerX, centerY);
         canvas.rotate(minuteAngle);
         canvas.drawPath(minuteHandPath, handPaint);
         canvas.restore();
 
-        // 9. Draw Second Hand (luxurious warm copper/gold)
+        // 8. Draw Second Hand (luxurious warm copper/gold)
         canvas.save();
         canvas.rotate(secondAngle, centerX, centerY);
         float secondHandLength = clockRadius * 0.84f;
@@ -250,11 +290,27 @@ public class ClockView extends View {
         canvas.drawLine(centerX, centerY + secondHandTail, centerX, centerY - secondHandLength, secondHandPaint);
         canvas.restore();
 
-        // 10. Draw Center Pivot (luxurious warm copper/gold circle)
+        // 9. Draw Center Pivot (luxurious warm copper/gold circle)
         float pivotRadius = clockRadius * 0.038f;
         canvas.drawCircle(centerX, centerY, pivotRadius, pivotPaint);
 
-        // 11. Schedule next frame
+        // 10. Draw Glossy Glass Lens Overlay (Inner Rim Shadow + Specular Glare)
+        // Draw inner depth vignette shadow
+        canvas.drawCircle(centerX, centerY, innerRadius, glassVignettePaint);
+
+        // Draw upper specular glass sheen glare (clipped strictly inside dial circle)
+        canvas.save();
+        glassSheenPath.reset();
+        glassSheenPath.addCircle(centerX, centerY, innerRadius, Path.Direction.CW);
+        canvas.clipPath(glassSheenPath);
+        canvas.drawCircle(centerX, centerY, innerRadius, glassSheenPaint);
+        canvas.restore();
+
+        // 11. Draw outer dark bezel rim & edge outline on top
+        canvas.drawCircle(centerX, centerY, innerRadius, bezelPaint);
+        canvas.drawCircle(centerX, centerY, clockRadius, bezelOutlinePaint);
+
+        // 12. Schedule next frame
         postInvalidateOnAnimation();
     }
 }
