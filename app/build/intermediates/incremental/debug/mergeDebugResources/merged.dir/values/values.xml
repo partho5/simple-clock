@@ -1703,7 +1703,7 @@
         <item name="windowNoTitle">true</item>
     </style>
     <style name="Theme.SimpleWallClock" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowBackground">#CCCCCC</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>

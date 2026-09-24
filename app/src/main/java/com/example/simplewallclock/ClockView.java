@@ -51,7 +51,7 @@ public class ClockView extends View {
 
     private void init() {
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backgroundPaint.setColor(Color.WHITE);
+        backgroundPaint.setColor(Color.LTGRAY);
         backgroundPaint.setStyle(Paint.Style.FILL);
 
         borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -121,7 +121,7 @@ public class ClockView extends View {
         super.onDraw(canvas);
 
         // 1. Draw background
-        canvas.drawColor(Color.WHITE);
+        canvas.drawColor(Color.LTGRAY);
 
         if (clockRadius <= 0) return;
 
