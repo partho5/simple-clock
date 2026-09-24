@@ -15,13 +15,13 @@ import androidx.annotation.Nullable;
 import java.util.Calendar;
 
 /**
- * Custom View rendering an analog wall clock matching real wall clock aesthetics:
+ * Custom View rendering an analog wall clock matching vintage wall clock aesthetics:
  * - Thick black outer bezel rim
  * - White clock face on light gray background
- * - 60 radial tick marks (lines)
+ * - 60 radial tick marks with refined hour tick thickness
  * - Prominent, larger hour numbers (1-12)
- * - Tapered pointed hands (Hour, Minute) + thin Second hand, all solid black
- * - Central black pivot
+ * - Tapered spade hands in rich vintage brass / golden color
+ * - Matching vintage brass second hand and central pivot
  */
 public class ClockView extends View {
 
@@ -42,6 +42,10 @@ public class ClockView extends View {
     private final Rect textBounds = new Rect();
     private final Path hourHandPath = new Path();
     private final Path minuteHandPath = new Path();
+
+    // Vintage Brass / Golden color palette
+    private static final int BRASS_GOLD_COLOR = Color.parseColor("#C5A059");
+    private static final int BRASS_PIVOT_COLOR = Color.parseColor("#B8860B");
 
     public ClockView(Context context) {
         super(context);
@@ -86,17 +90,18 @@ public class ClockView extends View {
         numberPaint.setTextAlign(Paint.Align.CENTER);
         numberPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
 
+        // Vintage Brass/Golden hands
         handPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        handPaint.setColor(Color.BLACK);
+        handPaint.setColor(BRASS_GOLD_COLOR);
         handPaint.setStyle(Paint.Style.FILL);
 
         secondHandPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        secondHandPaint.setColor(Color.BLACK);
+        secondHandPaint.setColor(BRASS_GOLD_COLOR);
         secondHandPaint.setStyle(Paint.Style.STROKE);
         secondHandPaint.setStrokeCap(Paint.Cap.ROUND);
 
         pivotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        pivotPaint.setColor(Color.BLACK);
+        pivotPaint.setColor(BRASS_PIVOT_COLOR);
         pivotPaint.setStyle(Paint.Style.FILL);
     }
 
@@ -115,17 +120,17 @@ public class ClockView extends View {
         float bezelWidth = clockRadius * 0.08f;
         bezelPaint.setStrokeWidth(bezelWidth);
 
-        // 2. Tick mark stroke widths
-        minuteTickPaint.setStrokeWidth(clockRadius * 0.012f);
-        hourTickPaint.setStrokeWidth(clockRadius * 0.026f);
+        // 2. Refined tick mark stroke widths (reduced hour tick thickness to be sleeker)
+        minuteTickPaint.setStrokeWidth(clockRadius * 0.010f);
+        hourTickPaint.setStrokeWidth(clockRadius * 0.017f);
 
         // 3. Bigger numbers font size (~18% of clock radius)
         numberPaint.setTextSize(clockRadius * 0.18f);
 
         // 4. Second hand stroke width
-        secondHandPaint.setStrokeWidth(clockRadius * 0.014f);
+        secondHandPaint.setStrokeWidth(clockRadius * 0.013f);
 
-        // Build Hour Hand Path (tapered spade/arrow shape like reference image)
+        // Build Hour Hand Path (tapered spade shape)
         float hLength = clockRadius * 0.48f;
         float hTail = clockRadius * 0.09f;
         float hBaseW = clockRadius * 0.025f;
@@ -136,11 +141,11 @@ public class ClockView extends View {
         hourHandPath.moveTo(-hBaseW / 2f, hTail);
         hourHandPath.lineTo(hBaseW / 2f, hTail);
         hourHandPath.lineTo(hShoulderW / 2f, hShoulderY);
-        hourHandPath.lineTo(0, -hLength); // Sharp pointed tip
+        hourHandPath.lineTo(0, -hLength);
         hourHandPath.lineTo(-hShoulderW / 2f, hShoulderY);
         hourHandPath.close();
 
-        // Build Minute Hand Path (longer, slightly slender tapered spade/arrow shape)
+        // Build Minute Hand Path (longer tapered spade shape)
         float mLength = clockRadius * 0.72f;
         float mTail = clockRadius * 0.11f;
         float mBaseW = clockRadius * 0.020f;
@@ -151,7 +156,7 @@ public class ClockView extends View {
         minuteHandPath.moveTo(-mBaseW / 2f, mTail);
         minuteHandPath.lineTo(mBaseW / 2f, mTail);
         minuteHandPath.lineTo(mShoulderW / 2f, mShoulderY);
-        minuteHandPath.lineTo(0, -mLength); // Sharp pointed tip
+        minuteHandPath.lineTo(0, -mLength);
         minuteHandPath.lineTo(-mShoulderW / 2f, mShoulderY);
         minuteHandPath.close();
     }
@@ -173,7 +178,7 @@ public class ClockView extends View {
         // 3. Draw thick black outer border bezel
         canvas.drawCircle(centerX, centerY, innerRadius, bezelPaint);
 
-        // 4. Draw 60 minute tick positions (radial line sticks)
+        // 4. Draw 60 minute tick positions (radial line sticks with refined thickness)
         float tickOuterY = centerY - innerRadius + (bezelWidth / 2f);
         for (int i = 0; i < 60; i++) {
             boolean isHourTick = (i % 5 == 0);
@@ -186,7 +191,7 @@ public class ClockView extends View {
             canvas.restore();
         }
 
-        // 5. Draw numbers 1 to 12 (bigger font)
+        // 5. Draw numbers 1 to 12
         float numberRadius = clockRadius * 0.75f;
         for (int number = 1; number <= 12; number++) {
             double angleRad = Math.PI / 6 * (number - 3);
@@ -211,21 +216,21 @@ public class ClockView extends View {
         float minuteAngle = (minute + second / 60f + millis / 60000f) * 6f;
         float hourAngle = (hour + minute / 60f + second / 3600f) * 30f;
 
-        // 7. Draw Hour Hand (solid black tapered spade)
+        // 7. Draw Hour Hand (vintage brass/gold)
         canvas.save();
         canvas.translate(centerX, centerY);
         canvas.rotate(hourAngle);
         canvas.drawPath(hourHandPath, handPaint);
         canvas.restore();
 
-        // 8. Draw Minute Hand (solid black tapered spade)
+        // 8. Draw Minute Hand (vintage brass/gold)
         canvas.save();
         canvas.translate(centerX, centerY);
         canvas.rotate(minuteAngle);
         canvas.drawPath(minuteHandPath, handPaint);
         canvas.restore();
 
-        // 9. Draw Second Hand (solid black thin hand)
+        // 9. Draw Second Hand (vintage brass/gold)
         canvas.save();
         canvas.rotate(secondAngle, centerX, centerY);
         float secondHandLength = clockRadius * 0.84f;
@@ -233,7 +238,7 @@ public class ClockView extends View {
         canvas.drawLine(centerX, centerY + secondHandTail, centerX, centerY - secondHandLength, secondHandPaint);
         canvas.restore();
 
-        // 10. Draw Center Pivot (solid black circle)
+        // 10. Draw Center Pivot (vintage brass/gold circle)
         float pivotRadius = clockRadius * 0.038f;
         canvas.drawCircle(centerX, centerY, pivotRadius, pivotPaint);
 
