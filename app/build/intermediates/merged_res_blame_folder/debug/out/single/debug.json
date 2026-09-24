@@ -2,5 +2,9 @@
     {
         "merged": "com.example.simplewallclock.app-merged_res-20:/layout_activity_main.xml.flat",
         "source": "com.example.simplewallclock.app-main-22:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/home/haku/.gradle/daemon/8.9/com.example.simplewallclock.app-merged_res-20:/layout_activity_main.xml.flat",
+        "source": "/home/haku/.gradle/daemon/8.9/com.example.simplewallclock.app-main-22:/layout/activity_main.xml"
     }
 ]
