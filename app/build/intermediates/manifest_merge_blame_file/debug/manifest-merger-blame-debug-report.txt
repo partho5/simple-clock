@@ -1,6 +1,6 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-3    package="com.example.simplewallclock"
+3    package="com.jovoc.simplewallclock"
 4    android:versionCode="1"
 5    android:versionName="1.0" >
 6
@@ -10,12 +10,12 @@
 10
 11    <permission
 11-->[androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:22:5-24:47
-12        android:name="com.example.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+12        android:name="com.jovoc.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
 12-->[androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:23:9-81
 13        android:protectionLevel="signature" />
 13-->[androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:24:9-44
 14
-15    <uses-permission android:name="com.example.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+15    <uses-permission android:name="com.jovoc.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 15-->[androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:26:5-97
 15-->[androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
 16
@@ -35,7 +35,7 @@
 24-->/home/haku/projects/AndroidStudioProjects/Simple-Wall-Clock/app/src/main/AndroidManifest.xml:8:9-53
 25        <activity
 25-->/home/haku/projects/AndroidStudioProjects/Simple-Wall-Clock/app/src/main/AndroidManifest.xml:9:9-17:20
-26            android:name="com.example.simplewallclock.MainActivity"
+26            android:name="com.jovoc.simplewallclock.MainActivity"
 26-->/home/haku/projects/AndroidStudioProjects/Simple-Wall-Clock/app/src/main/AndroidManifest.xml:10:13-41
 27            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
 27-->/home/haku/projects/AndroidStudioProjects/Simple-Wall-Clock/app/src/main/AndroidManifest.xml:12:13-87
@@ -57,7 +57,7 @@
 36-->[androidx.emoji2:emoji2:1.2.0] /home/haku/.gradle/caches/8.9/transforms/8e844d7497914759f9d52628cc04a5e6/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
 37            android:name="androidx.startup.InitializationProvider"
 37-->[androidx.emoji2:emoji2:1.2.0] /home/haku/.gradle/caches/8.9/transforms/8e844d7497914759f9d52628cc04a5e6/transformed/emoji2-1.2.0/AndroidManifest.xml:25:13-67
-38            android:authorities="com.example.simplewallclock.androidx-startup"
+38            android:authorities="com.jovoc.simplewallclock.androidx-startup"
 38-->[androidx.emoji2:emoji2:1.2.0] /home/haku/.gradle/caches/8.9/transforms/8e844d7497914759f9d52628cc04a5e6/transformed/emoji2-1.2.0/AndroidManifest.xml:26:13-68
 39            android:exported="false" >
 39-->[androidx.emoji2:emoji2:1.2.0] /home/haku/.gradle/caches/8.9/transforms/8e844d7497914759f9d52628cc04a5e6/transformed/emoji2-1.2.0/AndroidManifest.xml:27:13-37

@@ -1,4 +1,4 @@
-package com.example.simplewallclock;
+package com.jovoc.simplewallclock;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -21,8 +21,8 @@ import java.util.Calendar;
  * Custom View rendering an analog wall clock with:
  * - Solid black outer background
  * - Pure white circular clock dial (#FFFFFF)
- * - Glossy 3D glass dial shine around the clock face (without hand shadows)
- * - Dark charcoal/black outer bezel rim with outline
+ * - Glossy 3D glass dial shine around the clock face
+ * - Dark charcoal outer bezel rim with bright silver-white outline
  * - High-contrast black numbers and radial tick marks
  * - Luxurious warm copper / rose-gold metallic hands & pivot
  */
@@ -57,7 +57,7 @@ public class ClockView extends View {
     private static final int BACKGROUND_COLOR = Color.BLACK;
     private static final int PURE_WHITE_DIAL = Color.WHITE;
     private static final int BEZEL_COLOR = Color.parseColor("#1C1C1C");
-    private static final int BEZEL_OUTLINE = Color.parseColor("#D0D0D0"); // Brighter silver-white accent outline
+    private static final int BEZEL_OUTLINE = Color.parseColor("#D0D0D0");
 
     // Luxurious warm copper / rose-gold metallic material color
     private static final int LUXURY_COPPER_GOLD = Color.parseColor("#D4703B");

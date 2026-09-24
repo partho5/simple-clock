@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.simplewallclock'
+    namespace 'com.jovoc.simplewallclock'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.simplewallclock"
+        applicationId "com.jovoc.simplewallclock"
         minSdk 24
         targetSdk 34
         versionCode 1

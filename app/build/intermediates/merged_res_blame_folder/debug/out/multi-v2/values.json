@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.simplewallclock.app-mergeDebugResources-18:/values/values.xml",
+            "outputFile": "com.jovoc.simplewallclock.app-mergeDebugResources-18:/values/values.xml",
             "map": [
                 {
                     "source": "/home/haku/.gradle/caches/8.9/transforms/04c579db083713999613da439225e230/transformed/savedstate-1.2.0/res/values/values.xml",

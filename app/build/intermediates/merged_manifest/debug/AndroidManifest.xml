@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.simplewallclock"
+    package="com.jovoc.simplewallclock"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -9,10 +9,10 @@
         android:targetSdkVersion="34" />
 
     <permission
-        android:name="com.example.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:name="com.jovoc.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="com.jovoc.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
         android:allowBackup="true"
@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SimpleWallClock" >
         <activity
-            android:name="com.example.simplewallclock.MainActivity"
+            android:name="com.jovoc.simplewallclock.MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="true" >
             <intent-filter>
@@ -35,7 +35,7 @@
 
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.example.simplewallclock.androidx-startup"
+            android:authorities="com.jovoc.simplewallclock.androidx-startup"
             android:exported="false" >
             <meta-data
                 android:name="androidx.emoji2.text.EmojiCompatInitializer"

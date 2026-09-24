@@ -65,7 +65,7 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/haku/
 		ADDED from /home/haku/projects/AndroidStudioProjects/Simple-Wall-Clock/app/src/main/AndroidManifest.xml:5:9-35
 	android:theme
 		ADDED from /home/haku/projects/AndroidStudioProjects/Simple-Wall-Clock/app/src/main/AndroidManifest.xml:8:9-53
-activity#com.example.simplewallclock.MainActivity
+activity#com.jovoc.simplewallclock.MainActivity
 ADDED from /home/haku/projects/AndroidStudioProjects/Simple-Wall-Clock/app/src/main/AndroidManifest.xml:9:9-17:20
 	android:exported
 		ADDED from /home/haku/projects/AndroidStudioProjects/Simple-Wall-Clock/app/src/main/AndroidManifest.xml:11:13-36
@@ -173,7 +173,7 @@ ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1
 		ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:24:9-44
 	android:name
 		ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:23:9-81
-permission#com.example.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+permission#com.jovoc.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:22:5-24:47
 	android:protectionLevel
 		ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:24:9-44
@@ -183,7 +183,7 @@ uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
-uses-permission#com.example.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission#com.jovoc.simplewallclock.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.9.0] /home/haku/.gradle/caches/8.9/transforms/1ba48e7a46549d6e285c12b18ad10990/transformed/core-1.9.0/AndroidManifest.xml:26:22-94

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.simplewallclock.app-mergeDebugResources-18:/values-eu/values-eu.xml",
+            "outputFile": "com.jovoc.simplewallclock.app-mergeDebugResources-18:/values-eu/values-eu.xml",
             "map": [
                 {
                     "source": "/home/haku/.gradle/caches/8.9/transforms/47e928f4f4223b1146f41cadcf9f63d0/transformed/appcompat-1.6.1/res/values-eu/values-eu.xml",

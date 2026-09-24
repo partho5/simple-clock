@@ -1,4 +1,4 @@
-package com.example.simplewallclock;
+package com.jovoc.simplewallclock;
 
 import android.os.Build;
 import android.os.Bundle;
