@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -106,12 +108,16 @@ public class MainActivity extends AppCompatActivity {
                 cardsContainer.addView(cardView);
             }
 
-            statusOverlay.setVisibility(View.VISIBLE);
+            if (statusOverlay.getVisibility() != View.VISIBLE) {
+                statusOverlay.setVisibility(View.VISIBLE);
+                Animation slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in_bottom);
+                statusOverlay.startAnimation(slideIn);
+            }
 
-            // Auto dismiss after 3 seconds
-            autoDismissHandler.postDelayed(autoDismissRunnable, 3000);
+            // Auto dismiss after 6 seconds
+            autoDismissHandler.postDelayed(autoDismissRunnable, 6000);
         } else {
-            statusOverlay.setVisibility(View.GONE);
+            dismissOverlay();
         }
     }
 
@@ -189,8 +195,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void dismissOverlay() {
         autoDismissHandler.removeCallbacks(autoDismissRunnable);
-        if (statusOverlay != null) {
-            statusOverlay.setVisibility(View.GONE);
+        if (statusOverlay != null && statusOverlay.getVisibility() == View.VISIBLE) {
+            Animation slideOut = AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom);
+            slideOut.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    statusOverlay.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+            });
+            statusOverlay.startAnimation(slideOut);
         }
     }
 
