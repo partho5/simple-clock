@@ -57,7 +57,7 @@ public class ClockView extends View {
     private static final int BACKGROUND_COLOR = Color.BLACK;
     private static final int PURE_WHITE_DIAL = Color.WHITE;
     private static final int BEZEL_COLOR = Color.parseColor("#1C1C1C");
-    private static final int BEZEL_OUTLINE = Color.parseColor("#444444");
+    private static final int BEZEL_OUTLINE = Color.parseColor("#D0D0D0"); // Brighter silver-white accent outline
 
     // Luxurious warm copper / rose-gold metallic material color
     private static final int LUXURY_COPPER_GOLD = Color.parseColor("#D4703B");
