@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -14,17 +15,23 @@ import androidx.annotation.Nullable;
 import java.util.Calendar;
 
 /**
- * Custom View rendering a clean, minimal, full-screen analog wall clock.
+ * Custom View rendering an analog wall clock matching real wall clock aesthetics:
+ * - Thick black outer bezel rim
+ * - White clock face on light gray background
+ * - 60 radial tick marks (lines)
+ * - Prominent, larger hour numbers (1-12)
+ * - Tapered pointed hands (Hour, Minute) + thin Second hand, all solid black
+ * - Central black pivot
  */
 public class ClockView extends View {
 
     private Paint backgroundPaint;
-    private Paint borderPaint;
+    private Paint bezelPaint;
+    private Paint facePaint;
     private Paint minuteTickPaint;
     private Paint hourTickPaint;
     private Paint numberPaint;
-    private Paint hourHandPaint;
-    private Paint minuteHandPaint;
+    private Paint handPaint;
     private Paint secondHandPaint;
     private Paint pivotPaint;
 
@@ -33,6 +40,8 @@ public class ClockView extends View {
     private float clockRadius;
 
     private final Rect textBounds = new Rect();
+    private final Path hourHandPath = new Path();
+    private final Path minuteHandPath = new Path();
 
     public ClockView(Context context) {
         super(context);
@@ -51,12 +60,16 @@ public class ClockView extends View {
 
     private void init() {
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backgroundPaint.setColor(Color.LTGRAY);
+        backgroundPaint.setColor(Color.parseColor("#E4E4E4"));
         backgroundPaint.setStyle(Paint.Style.FILL);
 
-        borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        borderPaint.setColor(Color.BLACK);
-        borderPaint.setStyle(Paint.Style.STROKE);
+        bezelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        bezelPaint.setColor(Color.BLACK);
+        bezelPaint.setStyle(Paint.Style.STROKE);
+
+        facePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        facePaint.setColor(Color.WHITE);
+        facePaint.setStyle(Paint.Style.FILL);
 
         minuteTickPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         minuteTickPaint.setColor(Color.BLACK);
@@ -73,15 +86,9 @@ public class ClockView extends View {
         numberPaint.setTextAlign(Paint.Align.CENTER);
         numberPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
 
-        hourHandPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        hourHandPaint.setColor(Color.BLACK);
-        hourHandPaint.setStyle(Paint.Style.STROKE);
-        hourHandPaint.setStrokeCap(Paint.Cap.ROUND);
-
-        minuteHandPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        minuteHandPaint.setColor(Color.BLACK);
-        minuteHandPaint.setStyle(Paint.Style.STROKE);
-        minuteHandPaint.setStrokeCap(Paint.Cap.ROUND);
+        handPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        handPaint.setColor(Color.BLACK);
+        handPaint.setStyle(Paint.Style.FILL);
 
         secondHandPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         secondHandPaint.setColor(Color.BLACK);
@@ -99,111 +106,138 @@ public class ClockView extends View {
         centerX = w / 2f;
         centerY = h / 2f;
 
-        float padding = Math.min(w, h) * 0.05f;
+        float padding = Math.min(w, h) * 0.04f;
         clockRadius = (Math.min(w, h) / 2f) - padding;
 
         if (clockRadius <= 0) return;
 
-        // Dynamic stroke widths & font dimensions relative to radius
-        borderPaint.setStrokeWidth(clockRadius * 0.035f);
+        // 1. Thick black outer bezel border (~8% of clock radius)
+        float bezelWidth = clockRadius * 0.08f;
+        bezelPaint.setStrokeWidth(bezelWidth);
+
+        // 2. Tick mark stroke widths
         minuteTickPaint.setStrokeWidth(clockRadius * 0.012f);
-        hourTickPaint.setStrokeWidth(clockRadius * 0.024f);
+        hourTickPaint.setStrokeWidth(clockRadius * 0.026f);
 
-        numberPaint.setTextSize(clockRadius * 0.15f);
+        // 3. Bigger numbers font size (~18% of clock radius)
+        numberPaint.setTextSize(clockRadius * 0.18f);
 
-        hourHandPaint.setStrokeWidth(clockRadius * 0.045f);
-        minuteHandPaint.setStrokeWidth(clockRadius * 0.030f);
+        // 4. Second hand stroke width
         secondHandPaint.setStrokeWidth(clockRadius * 0.014f);
+
+        // Build Hour Hand Path (tapered spade/arrow shape like reference image)
+        float hLength = clockRadius * 0.48f;
+        float hTail = clockRadius * 0.09f;
+        float hBaseW = clockRadius * 0.025f;
+        float hShoulderW = clockRadius * 0.060f;
+        float hShoulderY = -hLength * 0.75f;
+
+        hourHandPath.reset();
+        hourHandPath.moveTo(-hBaseW / 2f, hTail);
+        hourHandPath.lineTo(hBaseW / 2f, hTail);
+        hourHandPath.lineTo(hShoulderW / 2f, hShoulderY);
+        hourHandPath.lineTo(0, -hLength); // Sharp pointed tip
+        hourHandPath.lineTo(-hShoulderW / 2f, hShoulderY);
+        hourHandPath.close();
+
+        // Build Minute Hand Path (longer, slightly slender tapered spade/arrow shape)
+        float mLength = clockRadius * 0.72f;
+        float mTail = clockRadius * 0.11f;
+        float mBaseW = clockRadius * 0.020f;
+        float mShoulderW = clockRadius * 0.048f;
+        float mShoulderY = -mLength * 0.80f;
+
+        minuteHandPath.reset();
+        minuteHandPath.moveTo(-mBaseW / 2f, mTail);
+        minuteHandPath.lineTo(mBaseW / 2f, mTail);
+        minuteHandPath.lineTo(mShoulderW / 2f, mShoulderY);
+        minuteHandPath.lineTo(0, -mLength); // Sharp pointed tip
+        minuteHandPath.lineTo(-mShoulderW / 2f, mShoulderY);
+        minuteHandPath.close();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // 1. Draw background
-        canvas.drawColor(Color.LTGRAY);
+        // 1. Draw light gray background outside clock
+        canvas.drawColor(Color.parseColor("#E4E4E4"));
 
         if (clockRadius <= 0) return;
 
-        // 2. Draw circular outer border
-        canvas.drawCircle(centerX, centerY, clockRadius, borderPaint);
+        // 2. Draw white clock face background
+        float bezelWidth = bezelPaint.getStrokeWidth();
+        float innerRadius = clockRadius - (bezelWidth / 2f);
+        canvas.drawCircle(centerX, centerY, innerRadius, facePaint);
 
-        // 3. Draw 60 minute tick positions (small radial line segments / sticks)
-        // Each tick line is rotated at angle (i * 6 degrees) pointing directly towards the center.
+        // 3. Draw thick black outer border bezel
+        canvas.drawCircle(centerX, centerY, innerRadius, bezelPaint);
+
+        // 4. Draw 60 minute tick positions (radial line sticks)
+        float tickOuterY = centerY - innerRadius + (bezelWidth / 2f);
         for (int i = 0; i < 60; i++) {
             boolean isHourTick = (i % 5 == 0);
-            float tickLength = isHourTick ? (clockRadius * 0.08f) : (clockRadius * 0.04f);
-            Paint paint = isHourTick ? hourTickPaint : minuteTickPaint;
+            float tickLength = isHourTick ? (clockRadius * 0.075f) : (clockRadius * 0.038f);
+            Paint p = isHourTick ? hourTickPaint : minuteTickPaint;
 
             canvas.save();
-            // Rotate canvas around center by exact minute angle (i * 6 degrees)
             canvas.rotate(i * 6f, centerX, centerY);
-            
-            // Calculate top radial line segment coordinates from just inside border inward
-            float startY = centerY - clockRadius + (borderPaint.getStrokeWidth() / 2f);
-            float endY = startY + tickLength;
-            
-            // Draw straight stick line segment
-            canvas.drawLine(centerX, startY, centerX, endY, paint);
+            canvas.drawLine(centerX, tickOuterY, centerX, tickOuterY + tickLength, p);
             canvas.restore();
         }
 
-        // 4. Draw numbers 1-12
-        float numberRadius = clockRadius * 0.77f;
+        // 5. Draw numbers 1 to 12 (bigger font)
+        float numberRadius = clockRadius * 0.75f;
         for (int number = 1; number <= 12; number++) {
-            // Angle in radians (12 is top, so offset by -PI/2 or number - 3)
             double angleRad = Math.PI / 6 * (number - 3);
             float x = (float) (centerX + numberRadius * Math.cos(angleRad));
             float y = (float) (centerY + numberRadius * Math.sin(angleRad));
 
             String text = String.valueOf(number);
             numberPaint.getTextBounds(text, 0, text.length(), textBounds);
-            // Center vertical alignment via font metrics offset
             float correctedY = y + (textBounds.height() / 2f);
 
             canvas.drawText(text, x, correctedY, numberPaint);
         }
 
-        // 5. Calculate smooth hand angles from local time
+        // 6. Get local time
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) % 12;
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
         int millis = calendar.get(Calendar.MILLISECOND);
 
-        float secondAngle = (second + millis / 1000f) * 6f; // 360deg / 60sec = 6deg/sec
-        float minuteAngle = (minute + second / 60f + millis / 60000f) * 6f; // 360deg / 60min = 6deg/min
-        float hourAngle = (hour + minute / 60f + second / 3600f) * 30f; // 360deg / 12hr = 30deg/hr
+        float secondAngle = (second + millis / 1000f) * 6f;
+        float minuteAngle = (minute + second / 60f + millis / 60000f) * 6f;
+        float hourAngle = (hour + minute / 60f + second / 3600f) * 30f;
 
-        // 6. Draw Hour Hand
+        // 7. Draw Hour Hand (solid black tapered spade)
         canvas.save();
-        canvas.rotate(hourAngle, centerX, centerY);
-        float hourHandLength = clockRadius * 0.50f;
-        float hourHandTail = clockRadius * 0.08f;
-        canvas.drawLine(centerX, centerY + hourHandTail, centerX, centerY - hourHandLength, hourHandPaint);
+        canvas.translate(centerX, centerY);
+        canvas.rotate(hourAngle);
+        canvas.drawPath(hourHandPath, handPaint);
         canvas.restore();
 
-        // 7. Draw Minute Hand
+        // 8. Draw Minute Hand (solid black tapered spade)
         canvas.save();
-        canvas.rotate(minuteAngle, centerX, centerY);
-        float minuteHandLength = clockRadius * 0.72f;
-        float minuteHandTail = clockRadius * 0.10f;
-        canvas.drawLine(centerX, centerY + minuteHandTail, centerX, centerY - minuteHandLength, minuteHandPaint);
+        canvas.translate(centerX, centerY);
+        canvas.rotate(minuteAngle);
+        canvas.drawPath(minuteHandPath, handPaint);
         canvas.restore();
 
-        // 8. Draw Second Hand
+        // 9. Draw Second Hand (solid black thin hand)
         canvas.save();
         canvas.rotate(secondAngle, centerX, centerY);
-        float secondHandLength = clockRadius * 0.85f;
-        float secondHandTail = clockRadius * 0.12f;
+        float secondHandLength = clockRadius * 0.84f;
+        float secondHandTail = clockRadius * 0.14f;
         canvas.drawLine(centerX, centerY + secondHandTail, centerX, centerY - secondHandLength, secondHandPaint);
         canvas.restore();
 
-        // 9. Draw Center Pivot
-        float pivotRadius = clockRadius * 0.035f;
+        // 10. Draw Center Pivot (solid black circle)
+        float pivotRadius = clockRadius * 0.038f;
         canvas.drawCircle(centerX, centerY, pivotRadius, pivotPaint);
 
-        // 10. Schedule continuous 60 FPS animation frame
+        // 11. Schedule next frame
         postInvalidateOnAnimation();
     }
 }
