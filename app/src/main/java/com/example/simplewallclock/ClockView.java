@@ -120,9 +120,9 @@ public class ClockView extends View {
         float bezelWidth = clockRadius * 0.08f;
         bezelPaint.setStrokeWidth(bezelWidth);
 
-        // 2. Refined tick mark stroke widths (reduced hour tick thickness to be sleeker)
-        minuteTickPaint.setStrokeWidth(clockRadius * 0.010f);
-        hourTickPaint.setStrokeWidth(clockRadius * 0.017f);
+        // 2. Refined tick mark stroke widths (thinner minute & hour ticks)
+        minuteTickPaint.setStrokeWidth(clockRadius * 0.006f);
+        hourTickPaint.setStrokeWidth(clockRadius * 0.015f);
 
         // 3. Bigger numbers font size (~18% of clock radius)
         numberPaint.setTextSize(clockRadius * 0.18f);
