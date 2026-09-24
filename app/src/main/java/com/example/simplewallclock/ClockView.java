@@ -15,12 +15,12 @@ import androidx.annotation.Nullable;
 import java.util.Calendar;
 
 /**
- * Custom View rendering an analog wall clock with:
- * - Solid black screen background
- * - Distinct, true medium-gray round clock dial (#A6A6A6)
- * - Dark charcoal/black outer bezel rim with sharp outline edge
+ * Custom View rendering an analog wall clock:
+ * - Solid black outer background
+ * - Pure white circular clock dial (#FFFFFF)
+ * - Dark charcoal/black outer bezel rim with outline
  * - High-contrast black numbers and radial tick marks
- * - Vintage brass golden hands and pivot
+ * - Luxurious warm copper / rose-gold metallic hands & pivot
  */
 public class ClockView extends View {
 
@@ -45,11 +45,13 @@ public class ClockView extends View {
 
     // Color palette
     private static final int BACKGROUND_COLOR = Color.BLACK;
-    private static final int MEDIUM_GRAY_DIAL = Color.parseColor("#A6A6A6"); // True, distinct gray (not white)
+    private static final int PURE_WHITE_DIAL = Color.WHITE;
     private static final int BEZEL_COLOR = Color.parseColor("#1C1C1C");
     private static final int BEZEL_OUTLINE = Color.parseColor("#444444");
-    private static final int BRASS_GOLD_COLOR = Color.parseColor("#D4AF37");
-    private static final int BRASS_PIVOT_COLOR = Color.parseColor("#B8860B");
+
+    // Luxurious warm copper / rose-gold metallic material color
+    private static final int LUXURY_COPPER_GOLD = Color.parseColor("#D4703B");
+    private static final int LUXURY_PIVOT_COLOR = Color.parseColor("#B85A28");
 
     public ClockView(Context context) {
         super(context);
@@ -80,7 +82,7 @@ public class ClockView extends View {
         bezelOutlinePaint.setStyle(Paint.Style.STROKE);
 
         facePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        facePaint.setColor(MEDIUM_GRAY_DIAL);
+        facePaint.setColor(PURE_WHITE_DIAL);
         facePaint.setStyle(Paint.Style.FILL);
 
         minuteTickPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -98,18 +100,18 @@ public class ClockView extends View {
         numberPaint.setTextAlign(Paint.Align.CENTER);
         numberPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
 
-        // Vintage Brass/Golden hands
+        // Luxurious warm copper/rose-gold metallic hands
         handPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        handPaint.setColor(BRASS_GOLD_COLOR);
+        handPaint.setColor(LUXURY_COPPER_GOLD);
         handPaint.setStyle(Paint.Style.FILL);
 
         secondHandPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        secondHandPaint.setColor(BRASS_GOLD_COLOR);
+        secondHandPaint.setColor(LUXURY_COPPER_GOLD);
         secondHandPaint.setStyle(Paint.Style.STROKE);
         secondHandPaint.setStrokeCap(Paint.Cap.ROUND);
 
         pivotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        pivotPaint.setColor(BRASS_PIVOT_COLOR);
+        pivotPaint.setColor(LUXURY_PIVOT_COLOR);
         pivotPaint.setStyle(Paint.Style.FILL);
     }
 
@@ -129,7 +131,7 @@ public class ClockView extends View {
         bezelPaint.setStrokeWidth(bezelWidth);
         bezelOutlinePaint.setStrokeWidth(clockRadius * 0.008f);
 
-        // 2. Refined tick mark stroke widths
+        // 2. Tick mark stroke widths
         minuteTickPaint.setStrokeWidth(clockRadius * 0.007f);
         hourTickPaint.setStrokeWidth(clockRadius * 0.016f);
 
@@ -179,12 +181,12 @@ public class ClockView extends View {
 
         if (clockRadius <= 0) return;
 
-        // 2. Draw true medium-gray round clock dial face
+        // 2. Draw pure white round clock dial face
         float bezelWidth = bezelPaint.getStrokeWidth();
         float innerRadius = clockRadius - (bezelWidth / 2f);
         canvas.drawCircle(centerX, centerY, innerRadius, facePaint);
 
-        // 3. Draw outer dark bezel rim & subtle edge outline so clock stands out on black background
+        // 3. Draw outer dark bezel rim & edge outline
         canvas.drawCircle(centerX, centerY, innerRadius, bezelPaint);
         canvas.drawCircle(centerX, centerY, clockRadius, bezelOutlinePaint);
 
@@ -226,21 +228,21 @@ public class ClockView extends View {
         float minuteAngle = (minute + second / 60f + millis / 60000f) * 6f;
         float hourAngle = (hour + minute / 60f + second / 3600f) * 30f;
 
-        // 7. Draw Hour Hand (vintage brass/gold)
+        // 7. Draw Hour Hand (luxurious warm copper/gold)
         canvas.save();
         canvas.translate(centerX, centerY);
         canvas.rotate(hourAngle);
         canvas.drawPath(hourHandPath, handPaint);
         canvas.restore();
 
-        // 8. Draw Minute Hand (vintage brass/gold)
+        // 8. Draw Minute Hand (luxurious warm copper/gold)
         canvas.save();
         canvas.translate(centerX, centerY);
         canvas.rotate(minuteAngle);
         canvas.drawPath(minuteHandPath, handPaint);
         canvas.restore();
 
-        // 9. Draw Second Hand (vintage brass/gold)
+        // 9. Draw Second Hand (luxurious warm copper/gold)
         canvas.save();
         canvas.rotate(secondAngle, centerX, centerY);
         float secondHandLength = clockRadius * 0.84f;
@@ -248,7 +250,7 @@ public class ClockView extends View {
         canvas.drawLine(centerX, centerY + secondHandTail, centerX, centerY - secondHandLength, secondHandPaint);
         canvas.restore();
 
-        // 10. Draw Center Pivot (vintage brass/gold circle)
+        // 10. Draw Center Pivot (luxurious warm copper/gold circle)
         float pivotRadius = clockRadius * 0.038f;
         canvas.drawCircle(centerX, centerY, pivotRadius, pivotPaint);
 
