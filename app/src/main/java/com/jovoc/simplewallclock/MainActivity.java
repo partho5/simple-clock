@@ -4,10 +4,13 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,21 +66,28 @@ public class MainActivity extends AppCompatActivity {
         if (btnClose != null) {
             btnClose.setOnClickListener(v -> dismissOverlay());
         }
+    }
 
-        // Check active connections and display UI cards
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideSystemUI();
+        // Check active connections whenever app comes to foreground
         checkAndShowActiveConnections();
     }
 
     private void checkAndShowActiveConnections() {
+        autoDismissHandler.removeCallbacks(autoDismissRunnable);
+
         List<StatusItem> activeItems = new ArrayList<>();
 
-        // Check Internet Connectivity (Wi-Fi or Mobile Data)
-        if (isInternetConnected()) {
+        // Check if Internet (Wi-Fi or Mobile Data) is ON
+        if (isInternetOn()) {
             activeItems.add(new StatusItem("internet", R.drawable.ic_internet));
         }
 
-        // Check SIM Card Status
-        if (isSimCardActive()) {
+        // Check if SIM Card is ON / Inserted
+        if (isSimCardOn()) {
             activeItems.add(new StatusItem("SIM connection", R.drawable.ic_sim));
         }
 
@@ -105,31 +115,76 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isInternetConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm == null) return false;
+    private boolean isInternetOn() {
+        // 1. Check Wi-Fi state toggle
+        try {
+            WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (wm != null && wm.isWifiEnabled()) {
+                return true;
+            }
+        } catch (Exception ignored) {}
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network activeNetwork = cm.getActiveNetwork();
-            if (activeNetwork == null) return false;
-            NetworkCapabilities caps = cm.getNetworkCapabilities(activeNetwork);
-            return caps != null && (
-                    caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ||
-                    caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                    caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-            );
-        } else {
-            @SuppressWarnings("deprecation")
-            android.net.NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
-            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-        }
+        // 2. Check Mobile Data state toggle
+        try {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (tm != null && tm.isDataEnabled()) {
+                return true;
+            }
+        } catch (Exception ignored) {}
+
+        // 3. Check active network capabilities
+        try {
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    Network activeNetwork = cm.getActiveNetwork();
+                    if (activeNetwork != null) {
+                        NetworkCapabilities caps = cm.getNetworkCapabilities(activeNetwork);
+                        if (caps != null && (
+                                caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ||
+                                caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                                caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                        )) {
+                            return true;
+                        }
+                    }
+                } else {
+                    @SuppressWarnings("deprecation")
+                    android.net.NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+                    if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+
+        return false;
     }
 
-    private boolean isSimCardActive() {
-        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        if (tm == null) return false;
-        int simState = tm.getSimState();
-        return simState == TelephonyManager.SIM_STATE_READY;
+    private boolean isSimCardOn() {
+        // 1. Check TelephonyManager SIM State
+        try {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (tm != null) {
+                int simState = tm.getSimState();
+                if (simState == TelephonyManager.SIM_STATE_READY) {
+                    return true;
+                }
+            }
+        } catch (Exception ignored) {}
+
+        // 2. Check SubscriptionManager active SIM list
+        try {
+            SubscriptionManager sm = (SubscriptionManager) getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+            if (sm != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                List<SubscriptionInfo> activeList = sm.getActiveSubscriptionInfoList();
+                if (activeList != null && !activeList.isEmpty()) {
+                    return true;
+                }
+            }
+        } catch (Exception ignored) {}
+
+        return false;
     }
 
     private void dismissOverlay() {
