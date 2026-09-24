@@ -10,4 +10,49 @@
         android:layout_height="match_parent"
         android:layout_gravity="center" />
 
+    <!-- Status Overlay Card Container -->
+    <RelativeLayout
+        android:id="@+id/statusOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="20dp"
+        android:background="@drawable/bg_status_overlay"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <!-- Title: These are ON: -->
+        <TextView
+            android:id="@+id/statusTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/btnClose"
+            android:text="These are ON:"
+            android:textColor="#E0E0E0"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Top Right Red Cross Close Button -->
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Close status message"
+            android:src="@drawable/ic_close_red" />
+
+        <!-- Container for separate rectangular cards -->
+        <LinearLayout
+            android:id="@+id/cardsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/statusTitle"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical" />
+
+    </RelativeLayout>
+
 </FrameLayout>
